@@ -4,17 +4,15 @@ import json,datetime
 
 def main():
     while True:
-        filename = input('Please enter initial (A, N, O, or R): \n').upper()
-        if filename not in 'ANOR':
-            print('Invalid, please try again.\n')
-            continue
+        filename = input('Please enter first initial: \n').upper()
         while True:
             confirm = input('Confirm initial (Y/N): %s\n'%filename).upper()
             if confirm in 'NY':
                 break
             print('Invalid, please try again.\n')
         if confirm == 'Y': break
-    filename = filename + datetime.datetime.now().strftime('%b%d') + ' - groceryList.json'
+        print('Try again.')
+    filename = filename + datetime.datetime.now().strftime('%b%d') + '.json'
     print('creating file: %s'%filename)
     jsonfile = open(filename,'a+')
     groceries = {}
@@ -23,12 +21,12 @@ def main():
         item, price = input('    Enter item name: '),input('    Enter price for item: ')
         try:
             price = float(price)
-        except  ValueError:
+        except ValueError:
             print('Error with price, enter price in digits (no $).')
             continue
         while True:
             confirm = input('Confirm item (Y/N): %s - %s\n'%(item,price)).upper()
-            if confirm in 'NY':
+            if confirm and confirm in 'NY':
                 break
             print('Invalid, please try again.\n')
         if confirm == 'Y':
@@ -45,6 +43,18 @@ def main():
             print('Invalid, please try again.\n')
         if confirm == 'done': break
 
-    jsonfile.close()
+    to_dump = {
+        'list':groceries,
+        'sum':sum([groceries[key] for key in groceries]),
+        'for': 'all' #may add functionality for items shared with specific people
+    }
+    print('Writing to json file...')
+    try:
+        json.dump(to_dump,jsonfile)
+        jsonfile.close()
+        print('Successfully dumped to json file.')
+    except:
+        print('Unable to write to json, please try again.')
+    print('Peace out.')
 if __name__ == '__main__':
     main()
